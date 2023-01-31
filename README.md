@@ -3,7 +3,7 @@ The basic idea of this setup is to use Istio (Service Mesh) features to leverage
 for multiple tenants. 
 
 # Architecture
-![Architecture](https://raw.githubusercontent.com/ReToCode/diagrams/main/multi-tenancy/multitenancy-service-mesh.drawio.svg)
+![Architecture](https://raw.githubusercontent.com/ReToCode/diagrams/main/knative/multi-tenancy-service-mesh.drawio.svg)
 
 # High level overview
 * The setup is enforcing `istio mTLS` while using `AuthorizationPolicies` to isolate workloads.
