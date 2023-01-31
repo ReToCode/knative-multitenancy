@@ -5,6 +5,15 @@ for multiple tenants.
 # Architecture
 ![Architecture](https://raw.githubusercontent.com/ReToCode/diagrams/main/multi-tenancy/multitenancy-service-mesh.drawio.svg)
 
+# High level overview
+* The setup is enforcing `istio mTLS` while using `AuthorizationPolicies` to isolate workloads.
+* As `Knative` has different `data-paths` (via ingress-gateway, via activator, via ingress-gateway and activator or directly through the mesh) network isolation must be enforced on multiple places.
+* [peer-authentication](./config/peer-authentication.yaml) enforces `mTLS` on all relevant namespaces.
+* [knative-local-gateway](./config/knative-local-gateway.yaml) patches the internal gateway to enforce `istio mTLS`.
+* [authentication-policy-tenant-1](./config/authentication-policy-tenant-1.yaml) allows traffic to `tenant-1` namespace.
+* [authentication-policy-tenant-2](./config/authentication-policy-tenant-2.yaml) allows traffic to `tenant-2` namespace.
+* [authentication-policy-knative-serving](./config/authentication-policy-knative-serving.yaml) allows traffic to `knative-serving` namespace and holds tenancy filters based on `source namespaces` and target `hosts`.
+
 # Setup (K8S with Kind)
 
 ## Prerequisites
