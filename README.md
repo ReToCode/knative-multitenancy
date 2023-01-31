@@ -1,4 +1,4 @@
-# Serverless Multi-Tenancy based on Istio (Service Mesh) functionality
+# Serverless multi-tenancy based on Istio (Service Mesh) functionality
 The basic idea of this setup is to use Istio (Service Mesh) features to leverage a `network based` isolation 
 for multiple tenants. 
 
@@ -180,7 +180,7 @@ kubectl exec deployment/curl -n tenant-2 -it -- curl -siv "http://${POD_IP}/head
 ## Testing same tenant via activator
 ### [tenant-1] -> [activator] -> [tenant-1]
 ```bash
-# Note: this is routed directly to the activator, even tough the service points (CNAME) to knative-local-gateway.
+# Note: this is routed directly to the activator, even though the service points (CNAME) to knative-local-gateway.
 kubectl exec deployment/curl -n tenant-1 -it -- curl -siv http://svc-activator-in-path.tenant-1.svc.cluster.local/headers
 {
   "headers": {
@@ -202,7 +202,7 @@ kubectl exec deployment/curl -n tenant-1 -it -- curl -siv http://svc-activator-i
 ## Testing cross tenant via activator (should fail)
 ### [tenant-2] -> [activator] -> [tenant-1]
 ```bash
-# Note: this is routed directly to the activator, even tough the service points (CNAME) to knative-local-gateway.
+# Note: this is routed directly to the activator, even though the service points (CNAME) to knative-local-gateway.
 kubectl exec deployment/curl -n tenant-2 -it -- curl -siv http://svc-activator-in-path.tenant-1.svc.cluster.local/headers
 # HTTP/1.1 403 Forbidden
 # RBAC: access denied
