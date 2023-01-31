@@ -1,0 +1,22 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  labels:
+    app.kubernetes.io/component: net-istio
+    app.kubernetes.io/name: knative-serving
+    app.kubernetes.io/version: 1.8.1
+    networking.knative.dev/ingress-provider: istio
+  name: knative-local-gateway
+  namespace: knative-serving
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - '*'
+    tls:
+      mode: ISTIO_MUTUAL
+    port:
+      name: https
+      number: 8012
+      protocol: HTTPS

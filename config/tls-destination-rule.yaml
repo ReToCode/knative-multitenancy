@@ -1,0 +1,11 @@
+#apiVersion: networking.istio.io/v1beta1
+#kind: DestinationRule
+#metadata:
+#  name: svc-always-scaled
+#  namespace: tenant-1
+#spec:
+#  host: svc-always-scaled.tenant-2.svc.cluster.local
+#  trafficPolicy:
+#    tls:
+#      mode: ISTIO_MUTUAL
+#      sni: svc-always-scaled.tenant-2.svc.cluster.local

@@ -1,0 +1,40 @@
+---
+#apiVersion: security.istio.io/v1beta1
+#kind: PeerAuthentication
+#metadata:
+#  name: knative-local-gateway
+#  namespace: istio-system
+#spec:
+#  portLevelMtls:
+#    "8012":
+#      mode: STRICT
+#  selector:
+#    matchLabels:
+#      app: istio-ingressgateway
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: "default"
+  namespace: "knative-serving"
+spec:
+  mtls:
+    mode: STRICT
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: "default"
+  namespace: "tenant-1"
+spec:
+  mtls:
+    mode: STRICT
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: "default"
+  namespace: "tenant-2"
+spec:
+  mtls:
+    mode: STRICT

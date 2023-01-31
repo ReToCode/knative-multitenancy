@@ -1,0 +1,45 @@
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-traffic-to-knative-serving
+  namespace: knative-serving
+spec:
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: [ "knative-serving", "istio-system" ]
+        - source:
+            ipBlocks: [ "172.18.0.0/16" ] # necessary for webhooks from k8s node ip range
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-tenant-1-to-knative-serving
+  namespace: knative-serving
+spec:
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: [ "tenant-1" ]
+      to:
+        - operation:
+            hosts: [ "*.tenant-1.svc.cluster.local" ]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-tenant-2-to-knative-serving
+  namespace: knative-serving
+spec:
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: [ "tenant-2" ]
+      to:
+        - operation:
+            hosts: [ "*.tenant-2.svc.cluster.local" ]
+---
