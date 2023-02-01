@@ -1,0 +1,12 @@
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-traffic-to-tenant-2
+  namespace: tenant-2
+spec:
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["tenant-2", "knative-serving", "istio-system"]

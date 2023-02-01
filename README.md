@@ -8,11 +8,9 @@ for multiple tenants.
 # High level overview
 * The setup is enforcing `istio mTLS` while using `AuthorizationPolicies` to isolate workloads.
 * As `Knative` has different `data-paths` (via ingress-gateway, via activator, via ingress-gateway and activator or directly through the mesh) network isolation must be enforced on multiple places.
-* [peer-authentication](./config/peer-authentication.yaml) enforces `mTLS` on all relevant namespaces.
-* [knative-local-gateway](./config/knative-local-gateway.yaml) patches the internal gateway to enforce `istio mTLS`.
-* [authentication-policy-tenant-1](./config/authentication-policy-tenant-1.yaml) allows traffic to `tenant-1` namespace.
-* [authentication-policy-tenant-2](./config/authentication-policy-tenant-2.yaml) allows traffic to `tenant-2` namespace.
-* [authentication-policy-knative-serving](./config/authentication-policy-knative-serving.yaml) allows traffic to `knative-serving` namespace and holds tenancy filters based on `source namespaces` and target `hosts`.
+* `PeerAuthentication` is used to enforce `mTLS` on all relevant namespaces.
+* `knative-local-gateway` is patched to enforce `istio mTLS`.
+* `AuthorizationPolicy` are in place to only allow tenant traffic. The namespace `knative-serving` has additional rules that filter traffic based on `source namespaces` and `target hosts`. 
 
 # Setup (K8S with Kind)
 
@@ -38,7 +36,7 @@ kubectl delete pod --all -n knative-serving
 kubectl apply -f https://github.com/knative/net-istio/releases/download/knative-v1.8.1/net-istio.yaml
 ```
 
-# Tenant setup
+## Tenant setup (on Kind)
 ```bash
 # Creating tenants
 kubectl create ns tenant-1
@@ -47,11 +45,39 @@ kubectl label namespace tenant-1 istio-injection=enabled
 kubectl label namespace tenant-2 istio-injection=enabled
 
 # Apply secured config
-kubectl apply -f config 
+kubectl apply -f kind/config 
 
 # Create kservices
-kubectl apply -f services/tenant-1
-kubectl apply -f services/tenant-2
+kubectl apply -f kind/services/tenant-1
+kubectl apply -f kind/services/tenant-2
+```
+
+# Setup (OpenShift)
+```bash
+# Install Service Mesh
+oc apply -f openshift/mesh-operators
+oc apply -f openshift/mesh-config
+
+# Install Serverless Operator
+oc apply -f openshift/serverless-operator
+oc apply -f openshift/serverless-config
+
+# Integrate Service Mesh and Serverless
+oc apply -f openshift/serverless-mesh-integration
+```
+
+## Tenant setup (on OpenShift)
+```bash
+# Creating tenants
+oc new-project tenant-1
+oc new-project tenant-2
+
+# Apply secured config
+oc apply -f openshift/securing-config
+
+# Create kservices
+oc apply -f openshift/services/tenant-1
+oc apply -f openshift/services/tenant-2
 ```
 
 # Verification
