@@ -24,7 +24,8 @@ kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1
 kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.8.3/serving-core.yaml
 
 # Istio as networking layer
-istioctl install -y
+kubectl apply -l knative.dev/crd-install=true -f https://github.com/knative/net-istio/releases/download/knative-v1.8.1/istio.yaml
+kubectl apply -f https://github.com/knative/net-istio/releases/download/knative-v1.8.1/istio.yaml
 
 # Enable proxies in knative-serving
 kubectl label namespace knative-serving istio-injection=enabled
@@ -86,8 +87,7 @@ Use the script to verify the configuration
 ./hack/verify.sh
 ```
 Example output
-```bash
-hack/verify.sh
+```text
 Testing same tenant directly
 Call to svc-always-scaled-00001-private.tenant-1.svc.cluster.local/headers succeeded
 Call to 10.244.3.11/headers succeeded
