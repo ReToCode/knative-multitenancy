@@ -2,23 +2,27 @@
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-traffic-to-knative-serving
+  name: allow-traffic-to-activator
   namespace: knative-serving
 spec:
+  selector:
+    matchLabels:
+      app: activator
   action: ALLOW
   rules:
     - from:
         - source:
             namespaces: [ "knative-serving", "istio-system" ]
-        - source:
-            ipBlocks: [ "10.0.0.0/16" ] # necessary for webhooks from k8s node ip range
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-tenant-1-to-knative-serving
+  name: allow-tenant-1-to-activator
   namespace: knative-serving
 spec:
+  selector:
+    matchLabels:
+      app: activator
   action: ALLOW
   rules:
     - from:
@@ -31,9 +35,12 @@ spec:
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-tenant-2-to-knative-serving
+  name: allow-tenant-2-to-activator
   namespace: knative-serving
 spec:
+  selector:
+    matchLabels:
+      app: activator
   action: ALLOW
   rules:
     - from:
