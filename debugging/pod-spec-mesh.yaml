@@ -1,0 +1,509 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.ovn.org/pod-networks: '{"default":{"ip_addresses":["10.128.1.38/23"],"mac_address":"0a:58:0a:80:01:26","gateway_ips":["10.128.0.1"[],"ip_address":"10.128.1.38/23","gateway_ip":"10.128.0.1"}}'
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "ovn-kubernetes",
+          "interface": "eth0",
+          "ips": [
+              "10.128.1.38"
+          ],
+          "mac": "0a:58:0a:80:01:26",
+          "default": true,
+          "dns": {}
+      },{
+          "name": "serving-tests/v2-4-istio-cni",
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks: v2-4-istio-cni
+    kubectl.kubernetes.io/default-container: user-container
+    kubectl.kubernetes.io/default-logs-container: user-container
+    openshift.io/scc: restricted-v2
+    prometheus.io/path: /stats/prometheus
+    prometheus.io/port: "15020"
+    prometheus.io/scrape: "true"
+    proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    serving.knative.dev/creator: system:admin
+    sidecar.istio.io/inject: "true"
+    sidecar.istio.io/interceptionMode: REDIRECT
+    sidecar.istio.io/rewriteAppHTTPProbers: "true"
+    sidecar.istio.io/status: '{"initContainers":null,"containers":["istio-proxy"[],"volumes":["workload-socket","credential-socket","workload-certs","istio-envoy","istio-data","istio-podinfo","istiod-ca-cert"[],"imagePullSecrets":null,"revision":"basic"}'
+    sidecar.maistra.io/proxyEnv: '{ "TERMINATION_DRAIN_DURATION_SECONDS": "20" }'
+    traffic.sidecar.istio.io/excludeInboundPorts: 15090,8444,15021
+    traffic.sidecar.istio.io/includeInboundPorts: '*'
+    traffic.sidecar.istio.io/includeOutboundIPRanges: '*'
+  creationTimestamp: "2023-07-13T09:31:50Z"
+  generateName: timeout-00001-deployment-69648dcfd5-
+  labels:
+    app: timeout-00001
+    maistra-version: 2.4.0
+    pod-template-hash: 69648dcfd5
+    security.istio.io/tlsMode: istio
+    service.istio.io/canonical-name: timeout
+    service.istio.io/canonical-revision: timeout-00001
+    serving.knative.dev/configuration: timeout
+    serving.knative.dev/configurationGeneration: "1"
+    serving.knative.dev/configurationUID: af66966c-7ef5-4769-859b-517ce956c931
+    serving.knative.dev/revision: timeout-00001
+    serving.knative.dev/revisionUID: a935b617-a80f-4256-a47a-59208563e42e
+    serving.knative.dev/service: timeout
+    serving.knative.dev/serviceUID: b4300d78-3e66-4456-9fc9-1e39898680bf
+  name: timeout-00001-deployment-69648dcfd5-jg4lv
+  namespace: serving-tests
+  ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: timeout-00001-deployment-69648dcfd5
+      uid: c59a05a4-3273-4eb7-8d4d-a47f1a866ac7
+  resourceVersion: "1002766"
+  uid: 127808e6-d462-4d33-908b-4b05d1b84092
+spec:
+  containers:
+    - args:
+        - proxy
+        - sidecar
+        - --domain
+        - $(POD_NAMESPACE).svc.cluster.local
+        - --proxyLogLevel=warning
+        - --proxyComponentLogLevel=misc:error
+        - --log_output_level=default:warn
+        - --concurrency
+        - "2"
+      env:
+        - name: JWT_POLICY
+          value: first-party-jwt
+        - name: PILOT_CERT_PROVIDER
+          value: istiod
+        - name: CA_ADDR
+          value: istiod-basic.istio-system.svc:15012
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.serviceAccountName
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.hostIP
+        - name: PROXY_CONFIG
+          value: |
+            {"discoveryAddress":"istiod-basic.istio-system.svc:15012","tracing":{"zipkin":{"address":"jaeger-collector.istio-system.svc:9411"}},"proxyMetadata":{"ISTIO_META_DNS_AUTO_ALLOCATE":"true","ISTIO_META_DNS_CAPTURE":"true","PROXY_XDS_VIA_AGENT":"true"},"holdApplicationUntilProxyStarts":true}
+        - name: ISTIO_META_POD_PORTS
+          value: |-
+            [
+                {"name":"user-port","containerPort":8080,"protocol":"TCP"}
+                ,{"name":"http-queueadm","containerPort":8022,"protocol":"TCP"}
+                ,{"name":"http-autometric","containerPort":9090,"protocol":"TCP"}
+                ,{"name":"http-usermetric","containerPort":9091,"protocol":"TCP"}
+                ,{"name":"queue-port","containerPort":8012,"protocol":"TCP"}
+                ,{"name":"https-port","containerPort":8112,"protocol":"TCP"}
+            ]
+        - name: ISTIO_META_APP_CONTAINERS
+          value: user-container,queue-proxy
+        - name: ISTIO_META_CLUSTER_ID
+          value: Kubernetes
+        - name: ISTIO_META_INTERCEPTION_MODE
+          value: REDIRECT
+        - name: ISTIO_META_WORKLOAD_NAME
+          value: timeout-00001-deployment
+        - name: ISTIO_META_OWNER
+          value: kubernetes://apis/apps/v1/namespaces/serving-tests/deployments/timeout-00001-deployment
+        - name: ISTIO_META_MESH_ID
+          value: cluster.local
+        - name: TRUST_DOMAIN
+          value: cluster.local
+        - name: TERMINATION_DRAIN_DURATION_SECONDS
+          value: "20"
+        - name: ISTIO_META_DNS_AUTO_ALLOCATE
+          value: "true"
+        - name: ISTIO_META_DNS_CAPTURE
+          value: "true"
+        - name: PROXY_XDS_VIA_AGENT
+          value: "true"
+        - name: ISTIO_KUBE_APP_PROBERS
+          value: '{"/app-health/queue-proxy/readyz":{"httpGet":{"path":"/","port":8012,"scheme":"HTTP","httpHeaders":[{"name":"K-Network-Probe","value":"queue"}]},"timeoutSeconds":1}}'
+      image: registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:07e174d5df7062b5f398291aed31cd01b874c8a6491ba6148675955b9d77ac5b
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        postStart:
+          exec:
+            command:
+              - pilot-agent
+              - wait
+      name: istio-proxy
+      ports:
+        - containerPort: 15090
+          name: http-envoy-prom
+          protocol: TCP
+      readinessProbe:
+        failureThreshold: 30
+        httpGet:
+          path: /healthz/ready
+          port: 15021
+          scheme: HTTP
+        initialDelaySeconds: 1
+        periodSeconds: 2
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        limits:
+          cpu: "2"
+          memory: 1Gi
+        requests:
+          cpu: 10m
+          memory: 128Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+            - KILL
+            - MKNOD
+            - SETGID
+            - SETUID
+        privileged: false
+        readOnlyRootFilesystem: true
+        runAsGroup: 1001190001
+        runAsNonRoot: true
+        runAsUser: 1001190001
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+        - mountPath: /var/run/secrets/workload-spiffe-uds
+          name: workload-socket
+        - mountPath: /var/run/secrets/credential-uds
+          name: credential-socket
+        - mountPath: /var/run/secrets/workload-spiffe-credentials
+          name: workload-certs
+        - mountPath: /var/run/secrets/istio
+          name: istiod-ca-cert
+        - mountPath: /var/lib/istio/data
+          name: istio-data
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /etc/istio/pod
+          name: istio-podinfo
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-qw4s7
+          readOnly: true
+    - env:
+        - name: PORT
+          value: "8080"
+        - name: K_REVISION
+          value: timeout-00001
+        - name: K_CONFIGURATION
+          value: timeout
+        - name: K_SERVICE
+          value: timeout
+      image: quay.io/rlehmann/timeout.go@sha256:cd4d89e29b4884260c6bdfd3b9b9cd43baf4f8db69362f81b85968f24b26886e
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          httpGet:
+            path: /wait-for-drain
+            port: 8022
+            scheme: HTTP
+      name: user-container
+      ports:
+        - containerPort: 8080
+          name: user-port
+          protocol: TCP
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        runAsNonRoot: true
+        runAsUser: 1001190000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-qw4s7
+          readOnly: true
+    - env:
+        - name: SERVING_NAMESPACE
+          value: serving-tests
+        - name: SERVING_SERVICE
+          value: timeout
+        - name: SERVING_CONFIGURATION
+          value: timeout
+        - name: SERVING_REVISION
+          value: timeout-00001
+        - name: QUEUE_SERVING_PORT
+          value: "8012"
+        - name: QUEUE_SERVING_TLS_PORT
+          value: "8112"
+        - name: CONTAINER_CONCURRENCY
+          value: "0"
+        - name: REVISION_TIMEOUT_SECONDS
+          value: "300"
+        - name: REVISION_RESPONSE_START_TIMEOUT_SECONDS
+          value: "0"
+        - name: REVISION_IDLE_TIMEOUT_SECONDS
+          value: "0"
+        - name: SERVING_POD
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: SERVING_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: SERVING_LOGGING_CONFIG
+        - name: SERVING_LOGGING_LEVEL
+          value: debug
+        - name: SERVING_REQUEST_LOG_TEMPLATE
+          value: '{"httpRequest": {"requestMethod": "{{.Request.Method}}", "requestUrl":
+        "{{js .Request.RequestURI}}", "requestSize": "{{.Request.ContentLength}}",
+        "status": {{.Response.Code}}, "responseSize": "{{.Response.Size}}", "userAgent":
+        "{{js .Request.UserAgent}}", "remoteIp": "{{js .Request.RemoteAddr}}", "serverIp":
+        "{{.Revision.PodIP}}", "referer": "{{js .Request.Referer}}", "latency": "{{.Response.Latency}}s",
+        "protocol": "{{.Request.Proto}}"}, "traceId": "{{index .Request.Header "X-B3-Traceid"}}"}'
+        - name: SERVING_ENABLE_REQUEST_LOG
+          value: "true"
+        - name: SERVING_REQUEST_METRICS_BACKEND
+          value: prometheus
+        - name: TRACING_CONFIG_BACKEND
+          value: none
+        - name: TRACING_CONFIG_ZIPKIN_ENDPOINT
+        - name: TRACING_CONFIG_DEBUG
+          value: "false"
+        - name: TRACING_CONFIG_SAMPLE_RATE
+          value: "0.1"
+        - name: USER_PORT
+          value: "8080"
+        - name: SYSTEM_NAMESPACE
+          value: knative-serving
+        - name: METRICS_DOMAIN
+          value: knative.dev/internal/serving
+        - name: SERVING_READINESS_PROBE
+          value: '{"tcpSocket":{"port":8080,"host":"127.0.0.1"},"successThreshold":1}'
+        - name: ENABLE_PROFILING
+          value: "false"
+        - name: SERVING_ENABLE_PROBE_REQUEST_LOG
+          value: "true"
+        - name: METRICS_COLLECTOR_ADDRESS
+        - name: CONCURRENCY_STATE_ENDPOINT
+        - name: CONCURRENCY_STATE_TOKEN_PATH
+          value: /var/run/secrets/tokens/state-token
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.hostIP
+        - name: ENABLE_HTTP2_AUTO_DETECTION
+          value: "false"
+        - name: ROOT_CA
+      image: registry.ci.openshift.org/openshift/knative-serving-queue:knative-v1.9
+      imagePullPolicy: IfNotPresent
+      name: queue-proxy
+      ports:
+        - containerPort: 8022
+          name: http-queueadm
+          protocol: TCP
+        - containerPort: 9090
+          name: http-autometric
+          protocol: TCP
+        - containerPort: 9091
+          name: http-usermetric
+          protocol: TCP
+        - containerPort: 8012
+          name: queue-port
+          protocol: TCP
+        - containerPort: 8112
+          name: https-port
+          protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          httpHeaders:
+            - name: K-Network-Probe
+              value: queue
+          path: /app-health/queue-proxy/readyz
+          port: 15020
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 25m
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 1001190000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-qw4s7
+          readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: false
+  imagePullSecrets:
+    - name: default-dockercfg-gxsdt
+  nodeName: sno
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1001190000
+    seLinuxOptions:
+      level: s0:c35,c0
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 300
+  tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+  volumes:
+    - emptyDir: {}
+      name: workload-socket
+    - emptyDir: {}
+      name: credential-socket
+    - emptyDir: {}
+      name: workload-certs
+    - emptyDir:
+        medium: Memory
+      name: istio-envoy
+    - emptyDir: {}
+      name: istio-data
+    - downwardAPI:
+        defaultMode: 420
+        items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.labels
+            path: labels
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.annotations
+            path: annotations
+      name: istio-podinfo
+    - configMap:
+        defaultMode: 420
+        name: istio-ca-root-cert
+      name: istiod-ca-cert
+    - name: kube-api-access-qw4s7
+      projected:
+        defaultMode: 420
+        sources:
+          - serviceAccountToken:
+              expirationSeconds: 3607
+              path: token
+          - configMap:
+              items:
+                - key: ca.crt
+                  path: ca.crt
+              name: kube-root-ca.crt
+          - downwardAPI:
+              items:
+                - fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+                  path: namespace
+          - configMap:
+              items:
+                - key: service-ca.crt
+                  path: service-ca.crt
+              name: openshift-service-ca.crt
+status:
+  conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2023-07-13T09:31:50Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2023-07-13T09:31:52Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2023-07-13T09:31:52Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2023-07-13T09:31:50Z"
+      status: "True"
+      type: PodScheduled
+  containerStatuses:
+    - containerID: cri-o://16de6617f4f1906ce21b203b551d75cec8794e4e5495f76c371b8f4606f097b5
+      image: registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:07e174d5df7062b5f398291aed31cd01b874c8a6491ba6148675955b9d77ac5b
+      imageID: registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:07e174d5df7062b5f398291aed31cd01b874c8a6491ba6148675955b9d77ac5b
+      lastState: {}
+      name: istio-proxy
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-07-13T09:31:50Z"
+    - containerID: cri-o://a9507a616ef1ad80a408bc35ae961e96512946ca30cccf80b7cdf2805ff9088f
+      image: registry.ci.openshift.org/openshift/knative-serving-queue:knative-v1.9
+      imageID: registry.ci.openshift.org/openshift/knative-serving-queue@sha256:45afc7fe956d137680c8616e41168d99afe652d41dbca3900bacb3bd08c80af5
+      lastState: {}
+      name: queue-proxy
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-07-13T09:31:51Z"
+    - containerID: cri-o://aa13ffc4e090df8a00eaba09bf7d1ae1dcb8d36da42bea06787685aeed277854
+      image: quay.io/rlehmann/timeout.go@sha256:cd4d89e29b4884260c6bdfd3b9b9cd43baf4f8db69362f81b85968f24b26886e
+      imageID: quay.io/rlehmann/timeout.go@sha256:7b4e41d331a02be3f7a6a13210a5a6689dbf8527db8e51710876ef82e66b6045
+      lastState: {}
+      name: user-container
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-07-13T09:31:51Z"
+  hostIP: 192.168.122.50
+  phase: Running
+  podIP: 10.128.1.38
+  podIPs:
+    - ip: 10.128.1.38
+  qosClass: Burstable
+  startTime: "2023-07-13T09:31:50Z"

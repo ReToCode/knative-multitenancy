@@ -1,0 +1,14 @@
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: "allow-wait-for-drain-non-tls"
+  namespace: "serving-tests"
+spec:
+  selector:
+    matchLabels:
+      serving.knative.dev/service: timeout
+  portLevelMtls:
+    "8022":
+      mode: PERMISSIVE
+---
