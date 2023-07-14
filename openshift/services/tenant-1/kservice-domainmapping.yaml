@@ -1,0 +1,36 @@
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: svc-with-dm
+  namespace: tenant-1
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: 'true'
+    spec:
+      containers:
+        - image: docker.io/openshift/hello-openshift
+          env:
+            - name: RESPONSE
+              value: "Hello Serverless!"
+---
+apiVersion: networking.internal.knative.dev/v1alpha1
+kind: ClusterDomainClaim
+metadata:
+  name: hello-dm.TODO
+spec:
+  namespace: tenant-1
+---
+apiVersion: serving.knative.dev/v1alpha1
+kind: DomainMapping
+metadata:
+  name: hello-dm.TODO
+  namespace: tenant-1
+spec:
+  ref:
+    name: svc-with-dm
+    kind: Service
+    apiVersion: serving.knative.dev/v1
+---
