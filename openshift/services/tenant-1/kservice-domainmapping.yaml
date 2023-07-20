@@ -19,14 +19,14 @@ spec:
 apiVersion: networking.internal.knative.dev/v1alpha1
 kind: ClusterDomainClaim
 metadata:
-  name: hello-dm.TODO
+  name: dm-test-tenant-1.apps.sno.codemint.ch
 spec:
   namespace: tenant-1
 ---
 apiVersion: serving.knative.dev/v1alpha1
 kind: DomainMapping
 metadata:
-  name: hello-dm.TODO
+  name: dm-test-tenant-1.apps.sno.codemint.ch
   namespace: tenant-1
 spec:
   ref:

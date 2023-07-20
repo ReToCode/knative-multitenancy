@@ -10,3 +10,17 @@ spec:
     - from:
         - source:
             namespaces: ["tenant-1", "knative-serving", "istio-system"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: "allow-wait-for-drain"
+  namespace: "tenant-1"
+spec:
+  action: ALLOW
+  rules:
+    - to:
+        - operation:
+            ports:
+              - "8022"
+---
