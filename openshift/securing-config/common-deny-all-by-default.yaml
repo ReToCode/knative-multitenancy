@@ -1,0 +1,15 @@
+# https://github.com/openshift-knative/knative-istio-authz-chart/blob/main/setup/deny-all-by-default.yaml
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: deny-all-by-default
+  namespace: knative-eventing
+spec: { }
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: deny-all-by-default
+  namespace: knative-serving
+spec: { }

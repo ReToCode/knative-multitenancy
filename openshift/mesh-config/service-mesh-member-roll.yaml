@@ -7,5 +7,6 @@ metadata:
 spec:
   members:
     - knative-serving
+    - knative-eventing
     - tenant-1
     - tenant-2
